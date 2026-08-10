@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends
-from .schemas import IntentRequest, ApiResponse, Product
+from .schemas import IntentRequest, ApiResponse
 from .security import api_key_security
+from .actions import search_product_action
 
 app = FastAPI(
     title="Synapse - Conversational API",
@@ -19,27 +20,7 @@ def handle_intent(request: IntentRequest, authorized: bool = Depends(api_key_sec
     Main endpoint to handle agent intentions.
     """
     if request.action == "search_product":
-        # Mock logic for searching products
-        mock_products = [
-            Product(
-                name="Proteína Vegana SuperMix",
-                price=45.99,
-                url="/products/vegan-protein-supermix",
-                in_stock=True
-            ),
-            Product(
-                name="Suplemento de Proteína Eco",
-                price=39.50,
-                url="/products/eco-protein-supplement",
-                in_stock=False
-            ),
-        ]
-        return ApiResponse(
-            status="success",
-            action_taken="search_results",
-            message=f"Found {len(mock_products)} products matching your query: '{request.query}'.",
-            data=mock_products
-        )
+        return search_product_action(request.query)
 
     # Handle unknown actions
     return ApiResponse(
